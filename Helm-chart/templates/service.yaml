@@ -1,0 +1,30 @@
+#Пользователи
+apiVersion: v1
+kind: Service
+metadata:
+  name: ordersservice-service
+spec:
+  type: {{ .Values.ordersservice.service.type }}
+  ports:
+     - name: http
+       port: {{ .Values.ordersservice.service.port }}
+       protocol: TCP
+       targetPort: {{ .Values.ordersservice.service.targetPort }}
+  selector:
+    app: ordersservice
+---
+#Авторизация
+apiVersion: v1
+kind: Service
+metadata:
+  name: authservice-service
+spec:
+  type: {{ .Values.authservice.service.type }}
+  ports:
+     - name: http
+       port: {{ .Values.authservice.service.port }}
+       protocol: TCP
+       targetPort: {{ .Values.authservice.service.targetPort }}
+  selector:
+    app: authservice
+---
