@@ -24,7 +24,7 @@ helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.git
 ```
 2. Развернуть сервисы через helm
 ```
-helm install orders ./helm-chart
+helm install orders ./Helm-chart
 ```
 3. Протестировать работоспособность с помощью newman:
 ```
