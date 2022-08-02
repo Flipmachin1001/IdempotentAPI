@@ -1,0 +1,551 @@
+{
+	"info": {
+		"_postman_id": "9b934881-fe57-4440-9e39-afa806fb64ae",
+		"name": "IdempotentApi",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Регистрация пользователя",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let userName = pm.variables.replaceIn(\"{{$randomUserName}}\")\r",
+							"pm.collectionVariables.set(\"UserName\",userName)\r",
+							"let userpass = pm.variables.replaceIn(\"{{$randomPassword}}\")\r",
+							"pm.collectionVariables.set(\"UserPass\", userpass)"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"userName\": \"{{UserName}}\",\r\n  \"password\": \"{{UserPass}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/login/api/Auth/NewLogin",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"login",
+						"api",
+						"Auth",
+						"NewLogin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Вход пользователя",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var responseJSON = JSON.parse(responseBody)\r",
+							"pm.collectionVariables.set(\"UserToken\", responseJSON[\"token\"])\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"userName\": \"{{UserName}}\",\r\n  \"password\": \"{{UserPass}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/login/api/Auth/Login",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"login",
+						"api",
+						"Auth",
+						"Login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Создание заказа на забор груза",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let randomCountry = pm.variables.replaceIn(\"{{$randomCountry}}\")\r",
+							"pm.collectionVariables.set(\"ShipperCountry\",randomCountry)\r",
+							"\r",
+							"let randomStreetAddress = pm.variables.replaceIn(\"{{$randomStreetAddress}}\")\r",
+							"pm.collectionVariables.set(\"ShipperAddress\", randomStreetAddress)\r",
+							"\r",
+							"let randomCity = pm.variables.replaceIn(\"{{$randomCity}}\")\r",
+							"pm.collectionVariables.set(\"ShipperCity\", randomCity)\r",
+							"\r",
+							"randomCountry = pm.variables.replaceIn(\"{{$randomCountry}}\")\r",
+							"pm.collectionVariables.set(\"ConsigneeCountry\",randomCountry)\r",
+							"\r",
+							"randomStreetAddress = pm.variables.replaceIn(\"{{$randomStreetAddress}}\")\r",
+							"pm.collectionVariables.set(\"ConsigneeAddress\", randomStreetAddress)\r",
+							"\r",
+							"randomCity = pm.variables.replaceIn(\"{{$randomCity}}\")\r",
+							"pm.collectionVariables.set(\"ConsigneeCity\", randomCity)\r",
+							"\r",
+							"pm.collectionVariables.set(\"PlacesCount\", 1)\r",
+							"pm.collectionVariables.set(\"TotalWeigth\", 1)\r",
+							"pm.collectionVariables.set(\"TotalVolume\", 10)\r",
+							"pm.collectionVariables.set(\"Description\", \"Документы\")\r",
+							"\r",
+							"let tomorrow = pm.variables.replaceIn(\"{{$randomDateFuture}}\")\r",
+							"\r",
+							"var moment = require('moment');\r",
+							"pm.collectionVariables.set(\"CargoTakenDate\", moment().format((\"YYYY-MM-DDTHH:mm:ss\")))\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var responseJSON = JSON.parse(responseBody)\r",
+							"pm.collectionVariables.set(\"OrderHash\", responseJSON[\"orderHash\"])\r",
+							"pm.collectionVariables.set(\"OrderId\", responseJSON[\"orderId\"])\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{UserToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"shipper\": {\r\n    \"country\": \"{{ShipperCountry}}\",\r\n    \"address\": \"{{ShipperAddress}}\",\r\n    \"city\": \"{{ShipperCity}}\"\r\n  },\r\n  \"consignee\": {\r\n    \"country\": \"{{ConsigneeCountry}}\",\r\n    \"address\": \"{{ConsigneeAddress}}\",\r\n    \"city\": \"{{ConsigneeCity}}\"\r\n  },\r\n  \"cargoInfo\": {\r\n    \"placesCount\": {{PlacesCount}},\r\n    \"totalWeigth\": {{TotalWeigth}},\r\n    \"totalVolume\": {{TotalVolume}},\r\n    \"description\": \"{{Description}}\"\r\n  },\r\n  \"cargoTakenDate\": \"{{CargoTakenDate}}Z\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/orders/api/Orders/CreateOrder",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders",
+						"api",
+						"Orders",
+						"CreateOrder"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Повторное создание заказа с теми же данными",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var responseJSON = JSON.parse(responseBody)\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"OrderId Is LastOrder\", function(){\r",
+							"    responseJSON[\"orderId\"] == pm.collectionVariables.get(\"OrderId\");\r",
+							"    responseJSON[\"orderHash\"] == pm.collectionVariables.get(\"OrderHash\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{UserToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"shipper\": {\r\n    \"country\": \"{{ShipperCountry}}\",\r\n    \"address\": \"{{ShipperAdress}}\",\r\n    \"city\": \"{{ShipperCity}}\"\r\n  },\r\n  \"consignee\": {\r\n    \"country\": \"{{ConsigneeCountry}}\",\r\n    \"address\": \"{{ConsigneeAddress}}\",\r\n    \"city\": \"{{ConsigneeCity}}\"\r\n  },\r\n  \"cargoInfo\": {\r\n    \"placesCount\": {{PlacesCount}},\r\n    \"totalWeigth\": {{TotalWeigth}},\r\n    \"totalVolume\": {{TotalVolume}},\r\n    \"description\": \"{{Description}}\"\r\n  },\r\n  \"cargoTakenDate\": \"{{CargoTakenDate}}Z\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/orders/api/Orders/CreateOrder",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders",
+						"api",
+						"Orders",
+						"CreateOrder"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получить информацию о заказе",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{UserToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/orders/api/Orders/GetOrder/{{OrderId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders",
+						"api",
+						"Orders",
+						"GetOrder",
+						"{{OrderId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Измененение заказа",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let randomCountry = pm.variables.replaceIn(\"{{$randomCountry}}\")\r",
+							"pm.collectionVariables.set(\"ShipperCountry\",randomCountry)\r",
+							"\r",
+							"let randomStreetAddress = pm.variables.replaceIn(\"{{$randomStreetAddress}}\")\r",
+							"pm.collectionVariables.set(\"ShipperAddress\", randomStreetAddress)\r",
+							"\r",
+							"let randomCity = pm.variables.replaceIn(\"{{$randomCity}}\")\r",
+							"pm.collectionVariables.set(\"ShipperCity\", randomCity)"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{UserToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"shipper\": {\r\n    \"country\": \"{{ShipperCountry}}\",\r\n    \"address\": \"{{ShipperAddress}}\",\r\n    \"city\": \"{{ShipperCity}}\"\r\n  },\r\n  \"consignee\": {\r\n    \"country\": \"{{ConsigneeCountry}}\",\r\n    \"address\": \"{{ConsigneeAddress}}\",\r\n    \"city\": \"{{ConsigneeCity}}\"\r\n  },\r\n  \"cargoInfo\": {\r\n    \"placesCount\": {{PlacesCount}},\r\n    \"totalWeigth\": {{TotalWeigth}},\r\n    \"totalVolume\": {{TotalVolume}},\r\n    \"description\": \"{{Description}}\"\r\n  },\r\n  \"cargoTakenDate\": \"{{CargoTakenDate}}Z\",\r\n  \"orderHash\": \"{{OrderHash}}\",\r\n  \"orderId\": {{OrderId}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/orders/api/Orders/UpdateOrder",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders",
+						"api",
+						"Orders",
+						"UpdateOrder"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Повторная попытка изменения заказа с теми же данными",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{UserToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"shipper\": {\r\n    \"country\": \"{{ShipperCountry}}\",\r\n    \"address\": \"{{ShipperAddress}}\",\r\n    \"city\": \"{{ShipperCity}}\"\r\n  },\r\n  \"consignee\": {\r\n    \"country\": \"{{ConsigneeCountry}}\",\r\n    \"address\": \"{{ConsigneeAddress}}\",\r\n    \"city\": \"{{ConsigneeCity}}\"\r\n  },\r\n  \"cargoInfo\": {\r\n    \"placesCount\": {{PlacesCount}},\r\n    \"totalWeigth\": {{TotalWeigth}},\r\n    \"totalVolume\": {{TotalVolume}},\r\n    \"description\": \"{{Description}}\"\r\n  },\r\n  \"cargoTakenDate\": \"{{CargoTakenDate}}Z\",\r\n  \"orderHash\": \"{{OrderHash}}\",\r\n  \"orderId\": {{OrderId}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/orders/api/Orders/UpdateOrder",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders",
+						"api",
+						"Orders",
+						"UpdateOrder"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"console.log(pm.request);",
+					"console.log(pm.response);"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "UserName",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "UserPass",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "UserToken",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "baseUrl",
+			"value": "arch.homework",
+			"type": "default"
+		},
+		{
+			"key": "ShipperCity",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "ShipperCountry",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "ConsigneeCity",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "ConsigneeAddress",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "ConsigneeCountry",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "PlacesCount",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "TotalWeigth",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "TotalVolume",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "Description",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "CargoTakenDate",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "OrderHash",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "ShipperAddress",
+			"value": ""
+		},
+		{
+			"key": "OrderId",
+			"value": ""
+		}
+	]
+}
