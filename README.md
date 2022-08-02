@@ -16,3 +16,21 @@
 Если версии совпадают, заказ обновляется и пользователю возвращается обновленный заказ с новым хэшем (новая версия заказа).
 Если версии не совпадают, то возвращается 400 ошибка с текстом "Версия обновляемого заказа отличается от версии в БД". 
 Клиент получает последнюю версию заказа и повторяет операцию.
+
+**Инструкция по установке**
+1. Поставить NGINX ингресс через helm, если не установлен
+```
+helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx --namespace ingress-nginx --create-namespace --set controller.admissionWebhooks.enabled=false
+```
+2. Развернуть сервисы через helm
+```
+helm install orders ./helm-chart
+```
+3. Протестировать работоспособность с помощью newman:
+```
+newman run IdempotentApi.postman_collection.json
+```
+4. Удаление сервисов
+```
+helm uninstall orders
+```
