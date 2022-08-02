@@ -448,8 +448,7 @@
 			"script": {
 				"type": "text/javascript",
 				"exec": [
-					"console.log(pm.request);",
-					"console.log(pm.response);"
+					""
 				]
 			}
 		},
@@ -458,7 +457,8 @@
 			"script": {
 				"type": "text/javascript",
 				"exec": [
-					""
+					"console.log(pm.request);",
+					"console.log(pm.response);"
 				]
 			}
 		}
